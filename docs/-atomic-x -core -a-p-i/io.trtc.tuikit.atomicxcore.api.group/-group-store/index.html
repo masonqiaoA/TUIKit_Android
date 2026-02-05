@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>GroupStore</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+            <a href="../../../index.html">
+                    <span>AtomicX Core API</span>
+            </a>
+    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":atomicxcore:dokkaHtml/release">androidJvm</button>
+        </div>
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="AtomicX Core API::io.trtc.tuikit.atomicxcore.api.group/GroupStore///PointingToDeclaration//-1933612244">
+  <div class="breadcrumbs"><a href="../../../index.html">AtomicX Core API</a><span class="delimiter">/</span><a href="../index.html">io.trtc.tuikit.atomicxcore.api.group</a><span class="delimiter">/</span><span class="current">GroupStore</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Group</span><wbr></wbr><span><span>Store</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="index.html">GroupStore</a></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-1674512348%2FClasslikes%2F-1933612244" anchor-label="Companion" id="-1674512348%2FClasslikes%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1674512348%2FClasslikes%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="1546760075%2FProperties%2F-1933612244" anchor-label="groupState" id="1546760075%2FProperties%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="group-state.html"><span>group</span><wbr></wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1546760075%2FProperties%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">val </span><a href="group-state.html">groupState</a><span class="token operator">: </span><a href="../-group-state/index.html">GroupState</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1989661720%2FFunctions%2F-1933612244" anchor-label="acceptGroupApplication" id="-1989661720%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="accept-group-application.html"><span>accept</span><wbr></wbr><span>Group</span><wbr></wbr><span><span>Application</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1989661720%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="accept-group-application.html"><span class="token function">acceptGroupApplication</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">info<span class="token operator">: </span><a href="../-group-application-info/index.html">GroupApplicationInfo</a><span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="212233829%2FFunctions%2F-1933612244" anchor-label="changeGroupOwner" id="212233829%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="change-group-owner.html"><span>change</span><wbr></wbr><span>Group</span><wbr></wbr><span><span>Owner</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="212233829%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="change-group-owner.html"><span class="token function">changeGroupOwner</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">groupID<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">newOwnerID<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="625571353%2FFunctions%2F-1933612244" anchor-label="clearGroupApplicationUnreadCount" id="625571353%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clear-group-application-unread-count.html"><span>clear</span><wbr></wbr><span>Group</span><wbr></wbr><span>Application</span><wbr></wbr><span>Unread</span><wbr></wbr><span><span>Count</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="625571353%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="clear-group-application-unread-count.html"><span class="token function">clearGroupApplicationUnreadCount</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1235860437%2FFunctions%2F-1933612244" anchor-label="createGroup" id="1235860437%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="create-group.html"><span>create</span><wbr></wbr><span><span>Group</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1235860437%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="create-group.html"><span class="token function">createGroup</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">groupType<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">groupName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">groupID<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">avatarURL<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">memberList<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../-create-group-completion-handler/index.html">CreateGroupCompletionHandler</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2003335215%2FFunctions%2F-1933612244" anchor-label="dismissGroup" id="-2003335215%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="dismiss-group.html"><span>dismiss</span><wbr></wbr><span><span>Group</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2003335215%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="dismiss-group.html"><span class="token function">dismissGroup</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">groupID<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-443633536%2FFunctions%2F-1933612244" anchor-label="fetchGroupApplicationList" id="-443633536%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="fetch-group-application-list.html"><span>fetch</span><wbr></wbr><span>Group</span><wbr></wbr><span>Application</span><wbr></wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-443633536%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="fetch-group-application-list.html"><span class="token function">fetchGroupApplicationList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-804123822%2FFunctions%2F-1933612244" anchor-label="fetchGroupAttributes" id="-804123822%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="fetch-group-attributes.html"><span>fetch</span><wbr></wbr><span>Group</span><wbr></wbr><span><span>Attributes</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-804123822%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="fetch-group-attributes.html"><span class="token function">fetchGroupAttributes</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">groupID<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">keys<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-348404406%2FFunctions%2F-1933612244" anchor-label="fetchGroupInfo" id="-348404406%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="fetch-group-info.html"><span>fetch</span><wbr></wbr><span>Group</span><wbr></wbr><span><span>Info</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-348404406%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="fetch-group-info.html"><span class="token function">fetchGroupInfo</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">groupIDList<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../-group-info-completion-handler/index.html">GroupInfoCompletionHandler</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1897245071%2FFunctions%2F-1933612244" anchor-label="fetchJoinedGroupList" id="-1897245071%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="fetch-joined-group-list.html"><span>fetch</span><wbr></wbr><span>Joined</span><wbr></wbr><span>Group</span><wbr></wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1897245071%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="fetch-joined-group-list.html"><span class="token function">fetchJoinedGroupList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1903200919%2FFunctions%2F-1933612244" anchor-label="joinGroup" id="1903200919%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="join-group.html"><span>join</span><wbr></wbr><span><span>Group</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1903200919%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="join-group.html"><span class="token function">joinGroup</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">groupID<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">message<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1924100116%2FFunctions%2F-1933612244" anchor-label="quitGroup" id="-1924100116%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="quit-group.html"><span>quit</span><wbr></wbr><span><span>Group</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1924100116%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="quit-group.html"><span class="token function">quitGroup</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">groupID<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-602695436%2FFunctions%2F-1933612244" anchor-label="refuseGroupApplication" id="-602695436%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="refuse-group-application.html"><span>refuse</span><wbr></wbr><span>Group</span><wbr></wbr><span><span>Application</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-602695436%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="refuse-group-application.html"><span class="token function">refuseGroupApplication</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">info<span class="token operator">: </span><a href="../-group-application-info/index.html">GroupApplicationInfo</a><span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1571641760%2FFunctions%2F-1933612244" anchor-label="setGroupInviteOption" id="1571641760%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-group-invite-option.html"><span>set</span><wbr></wbr><span>Group</span><wbr></wbr><span>Invite</span><wbr></wbr><span><span>Option</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1571641760%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-group-invite-option.html"><span class="token function">setGroupInviteOption</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">groupID<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">option<span class="token operator">: </span><a href="../-group-join-option/index.html">GroupJoinOption</a><span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1325118817%2FFunctions%2F-1933612244" anchor-label="setGroupJoinOption" id="-1325118817%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-group-join-option.html"><span>set</span><wbr></wbr><span>Group</span><wbr></wbr><span>Join</span><wbr></wbr><span><span>Option</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1325118817%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-group-join-option.html"><span class="token function">setGroupJoinOption</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">groupID<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">option<span class="token operator">: </span><a href="../-group-join-option/index.html">GroupJoinOption</a><span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="64941355%2FFunctions%2F-1933612244" anchor-label="setReceiveMessageOpt" id="64941355%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-receive-message-opt.html"><span>set</span><wbr></wbr><span>Receive</span><wbr></wbr><span>Message</span><wbr></wbr><span><span>Opt</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="64941355%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-receive-message-opt.html"><span class="token function">setReceiveMessageOpt</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">groupID<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">opt<span class="token operator">: </span><span data-unresolved-link="io.trtc.tuikit.atomicxcore.api.conversation/ReceiveMessageOpt///PointingToDeclaration/">ReceiveMessageOpt</span><span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1730851454%2FFunctions%2F-1933612244" anchor-label="updateGroupProfile" id="1730851454%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update-group-profile.html"><span>update</span><wbr></wbr><span>Group</span><wbr></wbr><span><span>Profile</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1730851454%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="update-group-profile.html"><span class="token function">updateGroupProfile</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">groupInfo<span class="token operator">: </span><a href="../-group-info/index.html">GroupInfo</a><span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2026 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+</body>
+</html>
