@@ -14,14 +14,20 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.tencent.imsdk.v2.V2TIMManager
+import com.tencent.imsdk.v2.V2TIMValueCallback
 import com.tencent.qcloud.tuicore.TUIConstants
 import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.TUILogin
 import com.tencent.qcloud.tuicore.TUIThemeManager
 import com.tencent.qcloud.tuicore.interfaces.ITUINotification
 import com.tencent.uikit.app.R
+import com.tencent.uikit.app.main.call.GroupCallActivity
+import com.tencent.uikit.app.main.live.LiveActivity
+import com.trtc.uikit.roomkit.RoomHomeActivity
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar.AvatarContent
+import org.json.JSONObject
 
 class MainFragment : Fragment() {
     private var userCenter: AtomicAvatar? = null
@@ -74,6 +80,7 @@ class MainFragment : Fragment() {
                         intent.putExtra("TITLE", getString(item.itemTitle))
                         intent.putExtra("TYPE", type)
                         startActivity(intent)
+                        observerTUI(item.itemTargetClass)
                     }
                 }
             })
@@ -86,6 +93,29 @@ class MainFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         userCenter?.setContent(AvatarContent.URL(TUILogin.getFaceUrl(),  R.drawable.app_ic_avatar))
+    }
+
+    private fun observerTUI(activity: Class<*>?) {
+        var type = 0L
+        if (activity == GroupCallActivity::class.java) {
+            type = 1303
+        } else if (activity == LiveActivity::class.java) {
+            type = 1119
+        } else if (activity == RoomHomeActivity::class.java) {
+            type = 1205
+        }
+
+        val param = JSONObject().apply {
+            put("UIComponentType", type)
+        }.toString()
+        V2TIMManager.getInstance()
+            .callExperimentalAPI("reportTUIFeatureUsage", param, object : V2TIMValueCallback<Any> {
+                override fun onSuccess(t: Any?) {
+                }
+                override fun onError(code: Int, desc: String?) {
+                    Log.e(TAG, "reportFeatureUsage failed: $code $desc")
+                }
+            })
     }
 
     private val isSmallScreenDevice: Boolean
