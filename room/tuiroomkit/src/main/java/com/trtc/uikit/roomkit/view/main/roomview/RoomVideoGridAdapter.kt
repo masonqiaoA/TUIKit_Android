@@ -9,9 +9,9 @@ import androidx.constraintlayout.utils.widget.ImageFilterView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.trtc.tuikit.common.imageloader.ImageLoader
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.utils.dpToPx
+import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
 import io.trtc.tuikit.atomicxcore.api.view.RoomParticipantView

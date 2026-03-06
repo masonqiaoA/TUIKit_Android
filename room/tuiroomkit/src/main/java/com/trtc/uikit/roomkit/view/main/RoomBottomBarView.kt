@@ -12,10 +12,11 @@ import com.trtc.uikit.roomkit.base.operator.DeviceOperator
 import com.trtc.uikit.roomkit.base.ui.BaseView
 import com.trtc.uikit.roomkit.base.ui.RoomPopupDialog
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
-import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.room.ParticipantRole
+import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantStore
 import io.trtc.tuikit.atomicxcore.api.room.RoomStore
+import io.trtc.tuikit.atomicxcore.api.room.RoomType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -50,16 +51,24 @@ class RoomBottomBarView @JvmOverloads constructor(
     private val ivCamera: ImageView by lazy { findViewById(R.id.iv_camera) }
     private val tvCamera: TextView by lazy { findViewById(R.id.tv_camera) }
 
+    private var roomType = RoomType.STANDARD
     private var participantStore: RoomParticipantStore? = null
-    private val deviceStore = DeviceStore.shared()
     private val roomStore = RoomStore.shared()
 
     private var roomParticipantListViewDialog: RoomPopupDialog? = null
     private var currentRoomID: String? = null
 
-    init {
-        LayoutInflater.from(context).inflate(R.layout.roomkit_view_bottom_bar, this)
+    fun init(roomID: String, roomType: RoomType) {
+        this.roomType = roomType
+        removeAllViews()
+        if (roomType == RoomType.WEBINAR) {
+            LayoutInflater.from(context).inflate(R.layout.roomkit_bottom_bar_webinar_view, this)
+        } else {
+            LayoutInflater.from(context).inflate(R.layout.roomkit_bottom_bar_standard_view, this)
+        }
         initView()
+        super.init(roomID)
+        llCamera.visibility = if (roomType == RoomType.WEBINAR) GONE else VISIBLE
     }
 
     override fun initStore(roomID: String) {
@@ -72,6 +81,16 @@ class RoomBottomBarView @JvmOverloads constructor(
 
         subscribeJob = scope.launch {
             launch {
+                roomStore.state.currentRoom.collect { roomInfo ->
+                    roomInfo?.let {
+                        updateMicrophoneStatus()
+                        updateCameraStatus()
+                        updateParticipantCount(roomInfo.participantCount)
+                    }
+                }
+            }
+
+            launch {
                 participantStore.state.localParticipant.collect { localParticipant ->
                     localParticipant?.let {
                         updateMicrophoneStatus()
@@ -81,12 +100,8 @@ class RoomBottomBarView @JvmOverloads constructor(
             }
 
             launch {
-                roomStore.state.currentRoom.collect { roomInfo ->
-                    roomInfo?.let {
-                        updateMicrophoneStatus()
-                        updateCameraStatus()
-                        updateParticipantCount(roomInfo.participantCount)
-                    }
+                participantStore.state.participantList.collect { participants ->
+                    updateMicrophoneStatus()
                 }
             }
         }
@@ -115,6 +130,9 @@ class RoomBottomBarView @JvmOverloads constructor(
     }
 
     private fun updateParticipantCount(count: Int) {
+        if (roomType == RoomType.WEBINAR) {
+            return
+        }
         if (count > 0) {
             tvParticipants.text = context.getString(R.string.roomkit_member_count, count.toString())
         }
@@ -122,7 +140,13 @@ class RoomBottomBarView @JvmOverloads constructor(
 
     private fun updateMicrophoneStatus() {
         val localParticipant = participantStore?.state?.localParticipant?.value ?: return
+        val participantList = participantStore?.state?.participantList?.value ?: return
         val currentRoom = roomStore.state.currentRoom.value ?: return
+        if (!isLocalUserInList(participantList)) {
+            llMicrophone.visibility = INVISIBLE
+            return
+        }
+        llMicrophone.visibility = VISIBLE
         val microphoneStatus = localParticipant.microphoneStatus
         logger.info("updateCameraStatus microphoneStatus:$microphoneStatus isAllMicrophoneDisabled:${currentRoom.isAllMicrophoneDisabled}")
         when (microphoneStatus) {
@@ -143,6 +167,9 @@ class RoomBottomBarView @JvmOverloads constructor(
     }
 
     private fun updateCameraStatus() {
+        if (roomType == RoomType.WEBINAR) {
+            return
+        }
         val localParticipant = participantStore?.state?.localParticipant?.value ?: return
         val currentRoom = roomStore.state.currentRoom.value ?: return
         val cameraStatus = localParticipant.cameraStatus
@@ -173,7 +200,7 @@ class RoomBottomBarView @JvmOverloads constructor(
         val roomID = currentRoomID ?: return
         if (roomParticipantListViewDialog == null) {
             val view = RoomParticipantListView(context).apply {
-                init(roomID)
+                init(roomID, roomType)
             }
             roomParticipantListViewDialog = RoomPopupDialog(context).apply {
                 setView(view)
@@ -213,5 +240,14 @@ class RoomBottomBarView @JvmOverloads constructor(
                 }
             }
         }
+    }
+
+    fun isLocalUserInList(participants: List<RoomParticipant>): Boolean {
+        val localUserId = getLocalUserId() ?: return false
+        return participants.any { it.userID == localUserId }
+    }
+
+    private fun getLocalUserId(): String? {
+        return participantStore?.state?.localParticipant?.value?.userID?.takeIf { it.isNotEmpty() }
     }
 }

@@ -1,14 +1,15 @@
 package com.trtc.uikit.roomkit.base.error
 
 import android.content.Context
-import android.widget.Toast
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.log.RoomKitLogger
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast.Style
 
 /**
  * Error localization and handling utility.
  * Provides localized error messages for different error codes from RoomEngine and IM SDK.
- * 
+ *
  * Usage:
  * ```kotlin
  * ErrorLocalized.showError(context, -1001)
@@ -24,7 +25,13 @@ object ErrorLocalized {
     fun showError(context: Context, code: Int) {
         logger.info("showError: code: $code")
         val localizedMessage = getLocalizedMessage(context, code)
-        Toast.makeText(context, localizedMessage, Toast.LENGTH_SHORT).show()
+        when (code) {
+            RoomError.OPEN_MICROPHONE_NEED_PERMISSION_FROM_ADMIN.code,
+            RoomError.OPEN_CAMERA_NEED_PERMISSION_FROM_ADMIN.code ->
+                AtomicToast.show(context, localizedMessage, Style.WARNING)
+
+            else -> AtomicToast.show(context, localizedMessage, Style.ERROR)
+        }
     }
 
     /**

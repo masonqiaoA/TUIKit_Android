@@ -3,6 +3,7 @@ package com.trtc.uikit.roomkit.base.ui
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import io.trtc.tuikit.atomicxcore.api.room.RoomType
 
 /**
  * Base class for all room UI components.
@@ -47,7 +48,7 @@ abstract class BaseView @JvmOverloads constructor(
     protected var roomID: String = ""
     private var isObserving = false
 
-    open fun init(roomID: String) {
+    protected open fun init(roomID: String) {
         if (roomID.isEmpty()) {
             return
         }

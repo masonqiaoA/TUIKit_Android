@@ -10,10 +10,10 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.RoomMainActivity
 import com.trtc.uikit.roomkit.base.extension.getDisplayName
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.atomicxcore.api.login.UserProfile
 import kotlinx.coroutines.CoroutineScope
@@ -132,11 +132,11 @@ class RoomJoinView @JvmOverloads constructor(
     private fun handleJoinRoomClick() {
         val roomID = etRoomId.text.toString().trim()
         if (roomID.isEmpty()) {
-            Toast.makeText(
+            AtomicToast.show(
                 context,
                 context.getString(R.string.roomkit_input_can_not_empty),
-                Toast.LENGTH_SHORT
-            ).show()
+                AtomicToast.Style.WARNING
+            )
             return
         }
 

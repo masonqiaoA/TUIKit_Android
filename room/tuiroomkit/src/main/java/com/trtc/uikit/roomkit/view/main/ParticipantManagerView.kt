@@ -6,21 +6,23 @@ import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.constraintlayout.utils.widget.ImageFilterView
-import com.trtc.tuikit.common.imageloader.ImageLoader
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.error.ErrorLocalized
 import com.trtc.uikit.roomkit.base.extension.getDisplayName
 import com.trtc.uikit.roomkit.base.log.RoomKitLogger
 import com.trtc.uikit.roomkit.base.ui.BaseView
 import com.trtc.uikit.roomkit.base.ui.RoomAlertDialog
+import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast.Style
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
 import io.trtc.tuikit.atomicxcore.api.device.DeviceType
 import io.trtc.tuikit.atomicxcore.api.room.ParticipantRole
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantStore
+import io.trtc.tuikit.atomicxcore.api.room.RoomType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -54,7 +56,10 @@ class ParticipantManagerView @JvmOverloads constructor(
     private val llBanChat: LinearLayout by lazy { findViewById(R.id.ll_ban_chat) }
     private val tvBanChat: TextView by lazy { findViewById(R.id.tv_ban_chat) }
     private val llRemove: LinearLayout by lazy { findViewById(R.id.ll_remove) }
+    private val llSetAudience: LinearLayout by lazy { findViewById(R.id.ll_set_audience) }
 
+
+    private var roomType = RoomType.STANDARD
     private var participant: RoomParticipant? = null
     private var localParticipant: RoomParticipant? = null
     private var participantStore: RoomParticipantStore? = null
@@ -64,7 +69,8 @@ class ParticipantManagerView @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.roomkit_view_participant_action, this)
     }
 
-    fun init(roomID: String, listener: OnParticipantActionListener) {
+    fun init(roomID: String, roomType: RoomType, listener: OnParticipantActionListener) {
+        this.roomType = roomType
         super.init(roomID)
         this.onActionListener = listener
         setupListeners()
@@ -188,8 +194,9 @@ class ParticipantManagerView @JvmOverloads constructor(
         llCamera.visibility = GONE
         llTransferMaster.visibility = GONE
         llSetManager.visibility = GONE
-        llBanChat.visibility = GONE
         llRemove.visibility = GONE
+        llSetAudience.visibility = GONE
+        llSetAudience.visibility = GONE
     }
 
     private fun showOwnerActions(target: RoomParticipant) {
@@ -197,18 +204,22 @@ class ParticipantManagerView @JvmOverloads constructor(
         llCamera.visibility = VISIBLE
         llTransferMaster.visibility = VISIBLE
         llSetManager.visibility = if (target.role != ParticipantRole.OWNER) VISIBLE else GONE
-        llBanChat.visibility = GONE
         llRemove.visibility = if (target.role != ParticipantRole.OWNER) VISIBLE else GONE
     }
 
     private fun showAdminActions(target: RoomParticipant) {
         val canManage = target.role == ParticipantRole.GENERAL_USER
 
+        if (roomType == RoomType.WEBINAR) {
+            llCamera.visibility = GONE
+            llSetAudience.visibility = if (canManage) VISIBLE else GONE
+        } else {
+            llCamera.visibility = if (canManage) VISIBLE else GONE
+            llSetAudience.visibility = GONE
+        }
         llMicrophone.visibility = if (canManage) VISIBLE else GONE
-        llCamera.visibility = if (canManage) VISIBLE else GONE
         llTransferMaster.visibility = GONE
         llSetManager.visibility = GONE
-        llBanChat.visibility = GONE
         llRemove.visibility = if (canManage) VISIBLE else GONE
     }
 
@@ -259,6 +270,14 @@ class ParticipantManagerView @JvmOverloads constructor(
             participant?.let { participant ->
                 logger.info("Remove action clicked for ${participant.userID}")
                 showKickParticipantConfirmDialog(participant)
+                listener.onDismiss()
+            }
+        }
+
+        llSetAudience.setOnClickListener {
+            participant?.let { participant ->
+                logger.info("setAudience action clicked for ${participant.userID}")
+                handleDemoteParticipantToAudience(participant)
                 listener.onDismiss()
             }
         }
@@ -353,7 +372,7 @@ class ParticipantManagerView @JvmOverloads constructor(
                         logger.info("Revoke admin success: ${participant.userID}")
                         val message =
                             context.getString(R.string.roomkit_toast_admin_revoked, participant.getDisplayName())
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        AtomicToast.show(context, message, Style.SUCCESS)
                     }
 
                     override fun onFailure(code: Int, desc: String) {
@@ -368,7 +387,7 @@ class ParticipantManagerView @JvmOverloads constructor(
                     override fun onSuccess() {
                         logger.info("Set admin success: ${participant.userID}")
                         val message = context.getString(R.string.roomkit_toast_admin_set, participant.getDisplayName())
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        AtomicToast.show(context, message, Style.SUCCESS)
                     }
 
                     override fun onFailure(code: Int, desc: String) {
@@ -415,7 +434,7 @@ class ParticipantManagerView @JvmOverloads constructor(
             override fun onSuccess() {
                 logger.info("Transfer owner success: ${participant.userID}")
                 val message = context.getString(R.string.roomkit_toast_owner_transferred, participant.getDisplayName())
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                AtomicToast.show(context, message, Style.SUCCESS)
             }
 
             override fun onFailure(code: Int, desc: String) {
@@ -447,6 +466,21 @@ class ParticipantManagerView @JvmOverloads constructor(
 
             override fun onFailure(code: Int, desc: String) {
                 logger.error("Kick participant failed: code=$code, desc=$desc")
+                ErrorLocalized.showError(context, code)
+            }
+        })
+    }
+
+    private fun handleDemoteParticipantToAudience(participant: RoomParticipant) {
+        val store = participantStore ?: return
+        logger.info("demoteParticipantToAudience audience ${participant.userID}")
+        store.demoteParticipantToAudience(participant.userID, object : CompletionHandler {
+            override fun onSuccess() {
+                logger.info("demoteParticipantToAudience success: ${participant.userID}")
+            }
+
+            override fun onFailure(code: Int, desc: String) {
+                logger.error("demoteParticipantToAudience failed: code=$code, desc=$desc")
                 ErrorLocalized.showError(context, code)
             }
         })

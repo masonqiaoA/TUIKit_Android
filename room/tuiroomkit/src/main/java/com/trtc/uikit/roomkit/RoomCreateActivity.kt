@@ -1,8 +1,8 @@
 package com.trtc.uikit.roomkit
 
 import android.os.Bundle
-import com.trtc.tuikit.common.FullScreenActivity
 import com.trtc.uikit.roomkit.view.RoomCreateView
+import io.trtc.tuikit.atomicx.common.FullScreenActivity
 
 /**
  * RoomCreateActivity - Room creation screen container activity.

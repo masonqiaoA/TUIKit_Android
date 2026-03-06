@@ -100,6 +100,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:src="@drawable/roomkit_participant_list_view_ic_camera_off"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/iv_avatar"

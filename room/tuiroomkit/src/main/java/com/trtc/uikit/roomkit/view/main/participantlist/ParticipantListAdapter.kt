@@ -12,26 +12,50 @@ import android.widget.TextView
 import androidx.constraintlayout.utils.widget.ImageFilterView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.trtc.tuikit.common.imageloader.ImageLoader
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.extension.getDisplayName
+import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.atomicxcore.api.room.ParticipantRole
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
+import io.trtc.tuikit.atomicxcore.api.room.RoomType
 
 /**
  * Adapter for displaying participant list with avatar, name, role, and device status.
  */
-class ParticipantListAdapter : RecyclerView.Adapter<ParticipantListAdapter.ParticipantViewHolder>() {
+class ParticipantListAdapter(private val roomType: RoomType) : RecyclerView.Adapter<ParticipantListAdapter.ParticipantViewHolder>() {
 
     private var participants: List<RoomParticipant> = emptyList()
     private var onItemClickListener: ((RoomParticipant) -> Unit)? = null
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateData(newParticipants: List<RoomParticipant>) {
-        participants = newParticipants
+        participants = sortParticipants(newParticipants)
         notifyDataSetChanged()
+    }
+
+    private fun sortParticipants(participants: List<RoomParticipant>): List<RoomParticipant> {
+        val currentUserId = LoginStore.shared.loginState.loginUserInfo.value?.userID ?: ""
+        
+        return participants.sortedWith(compareBy(
+            // 1. Current user (me) comes first
+            { it.userID != currentUserId },
+            // 2. Room owner
+            { it.role != ParticipantRole.OWNER },
+            // 3. Admin
+            { it.role != ParticipantRole.ADMIN },
+            // 4. Screen sharing users
+            { it.screenShareStatus != DeviceStatus.ON },
+            // 5. Camera & microphone both on
+            { !(it.cameraStatus == DeviceStatus.ON && it.microphoneStatus == DeviceStatus.ON) },
+            // 6. Camera only
+            { !(it.cameraStatus == DeviceStatus.ON && it.microphoneStatus != DeviceStatus.ON) },
+            // 7. Microphone only
+            { !(it.cameraStatus != DeviceStatus.ON && it.microphoneStatus == DeviceStatus.ON) },
+            // 8. userName
+            { it.userName }
+        ))
     }
 
     fun setOnItemClickListener(listener: (RoomParticipant) -> Unit) {
@@ -41,7 +65,7 @@ class ParticipantListAdapter : RecyclerView.Adapter<ParticipantListAdapter.Parti
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ParticipantViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.roomkit_item_participant, parent, false)
-        return ParticipantViewHolder(view)
+        return ParticipantViewHolder(view, roomType)
     }
 
     override fun onBindViewHolder(holder: ParticipantViewHolder, position: Int) {
@@ -54,7 +78,7 @@ class ParticipantListAdapter : RecyclerView.Adapter<ParticipantListAdapter.Parti
 
     override fun getItemCount(): Int = participants.size
 
-    class ParticipantViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ParticipantViewHolder(itemView: View, private val roomType: RoomType) : RecyclerView.ViewHolder(itemView) {
         private val tvUsername: TextView = itemView.findViewById(R.id.tv_username)
         private val ivUserAvatar: ImageFilterView = itemView.findViewById(R.id.iv_avatar)
         private val ivScreenShare: ImageView = itemView.findViewById(R.id.iv_screen_share)
@@ -81,37 +105,6 @@ class ParticipantListAdapter : RecyclerView.Adapter<ParticipantListAdapter.Parti
                 )
             }
 
-            when (participant.screenShareStatus) {
-                DeviceStatus.ON -> {
-                    ivScreenShare.visibility = VISIBLE
-                }
-
-                else -> {
-                    ivScreenShare.visibility = GONE
-                }
-            }
-
-
-            when (participant.microphoneStatus) {
-                DeviceStatus.ON -> {
-                    ivMicrophone.setImageResource(R.drawable.roomkit_participant_list_view_ic_microphone_on)
-                }
-
-                else -> {
-                    ivMicrophone.setImageResource(R.drawable.roomkit_participant_list_view_ic_microphone_off)
-                }
-            }
-
-            when (participant.cameraStatus) {
-                DeviceStatus.ON -> {
-                    ivCamera.setImageResource(R.drawable.roomkit_participant_list_view_ic_camera_on)
-                }
-
-                else -> {
-                    ivCamera.setImageResource(R.drawable.roomkit_participant_list_view_ic_camera_off)
-                }
-            }
-
             when (participant.role) {
                 ParticipantRole.OWNER -> {
                     llRole.visibility = VISIBLE
@@ -136,6 +129,44 @@ class ParticipantListAdapter : RecyclerView.Adapter<ParticipantListAdapter.Parti
                     llRole.visibility = GONE
                 }
             }
+
+            when (participant.microphoneStatus) {
+                DeviceStatus.ON -> {
+                    ivMicrophone.setImageResource(R.drawable.roomkit_participant_list_view_ic_microphone_on)
+                }
+
+                else -> {
+                    ivMicrophone.setImageResource(R.drawable.roomkit_participant_list_view_ic_microphone_off)
+                }
+            }
+
+            if (roomType == RoomType.WEBINAR) {
+                return
+            }
+
+            ivCamera.visibility = VISIBLE
+            when (participant.cameraStatus) {
+                DeviceStatus.ON -> {
+                    ivCamera.setImageResource(R.drawable.roomkit_participant_list_view_ic_camera_on)
+                }
+
+                else -> {
+                    ivCamera.setImageResource(R.drawable.roomkit_participant_list_view_ic_camera_off)
+                }
+            }
+
+            ivScreenShare.visibility = VISIBLE
+            when (participant.screenShareStatus) {
+                DeviceStatus.ON -> {
+                    ivScreenShare.visibility = VISIBLE
+                }
+
+                else -> {
+                    ivScreenShare.visibility = GONE
+                }
+            }
+
+
         }
     }
 }

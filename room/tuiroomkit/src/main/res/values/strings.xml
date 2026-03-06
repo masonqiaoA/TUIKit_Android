@@ -18,6 +18,7 @@
     <string name="roomkit_unmute">Unmute</string>
     <string name="roomkit_end">End</string>
     <string name="roomkit_member_count">Members(%s)</string>
+    <string name="roomkit_member">Members</string>
     <string name="roomkit_expand">Expansion</string>
     <string name="roomkit_user_room">%s\'s room</string>
     <string name="roomkit_screen_share">Screen share</string>
@@ -93,6 +94,15 @@
     <string name="roomkit_tip_all_muted_cannot_unmute">All on mute audio unable to turn on microphone</string>
     <string name="roomkit_tip_all_video_off_cannot_start">All on mute video unable to turn on camera</string>
     <string name="roomkit_room_name">Room name</string>
+    <string name="roomkit_participant">Participant(%s)</string>
+    <string name="roomkit_audience">Audience(%s)</string>
+    <string name="roomkit_entered_room">Entered room</string>
+    <string name="roomkit_switch_to_participant">%s has been set as a participant</string>
+    <string name="roomkit_switch_to_audience">%s has been set as an audience</string>
+    <string name="roomkit_switch_to_participant_byself">You have been set as a participant</string>
+    <string name="roomkit_switch_to_audience_byself">You have been set as an audience</string>
+    <string name="roomkit_set_participant">Set as participant</string>
+    <string name="roomkit_set_audience">Set as audience</string>
     <string name="roomkit_err_0_success">Operation successful</string>
     <string name="roomkit_err_general">Temporarily unclassified general error</string>
     <string name="roomkit_err_n2_request_rate_limited">Request rate limited, please try again later</string>
@@ -160,15 +170,15 @@
     <string name="roomkit_err_100017_member_already_muted">This member has been muted</string>
     <string name="roomkit_err_100018_room_password_required">The current room requires a password for entry</string>
     <string name="roomkit_err_100019_room_password_incorrect">Room entry password error</string>
-    <string name="roomkit_err_100020_admin_limit_exceeded">The admin quantity exceeds the upper limit</string>
+    <string name="roomkit_err_100020_admin_limit_exceeded">The administrator list is full</string>
     <string name="roomkit_err_100102_signal_request_conflict">Signal request conflict</string>
     <string name="roomkit_err_100200_seat_is_locked">The seat is locked. you can try another seat</string>
     <string name="roomkit_err_100201_seat_is_occupied">The current seat is already occupied</string>
     <string name="roomkit_err_100202_already_in_seat_queue">Already on the seat queue</string>
     <string name="roomkit_err_100203_already_on_seat">Already on the seat</string>
     <string name="roomkit_err_100204_not_in_seat_queue">Not on the seat queue</string>
-    <string name="roomkit_err_100205_all_seats_are_full">The seats are all taken.</string>
-    <string name="roomkit_err_100206_not_on_seat">Not on the seat</string>
+    <string name="roomkit_err_100205_all_seats_are_full">The participant list is full.</string>
+    <string name="roomkit_err_100206_not_on_seat">Please become a participant first</string>
     <string name="roomkit_err_100210_user_already_on_seat">The user is already on the seat</string>
     <string name="roomkit_err_100211_seat_not_supported">The room does not support seat ability</string>
     <string name="roomkit_err_100251_seat_list_is_empty">The seat list is empty</string>
@@ -179,4 +189,10 @@
     <string name="roomkit_err_100504_room_metadata_key_size_limit">The size of key in the room\'s metadata exceeds the maximum byte limit</string>
     <string name="roomkit_err_7002_invalid_user_id">Invalid userid</string>
     <string name="roomkit_room_running">Running</string>
+    <string name="roomkit_permission_tips">Please turn on the %1$s permission first</string>
+    <string name="roomkit_permission_title">%1$s applies for access to the %2$s</string>
+    <string name="roomkit_permission_camera">Camera</string>
+    <string name="roomkit_permission_microphone">Microphone</string>
+    <string name="roomkit_permission_mic_reason">Needs access to your microphone for multi-person audio and video room features. Recording videos with audio requires microphone access.</string>
+    <string name="roomkit_permission_camera_reason">Needs access to your camera for multi-person audio and video room features. For beauty filters to work, we will collect the facial information captured by your camera in real time to detect your facial features.</string>
 </resources>

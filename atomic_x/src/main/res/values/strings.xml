@@ -1,4 +1,13 @@
 <resources>
+    <!-- Foreground Service -->
+    <string name="common_rtc_channel_name">Video Communications Foreground Service</string>
+    <string name="common_rtc_channel_description">Running</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_sure">Confirm</string>
+    <string name="common_permission_dialog_title">Authorization Request</string>
+    <string name="common_permission_dialog_positive_setting_text">Settings</string>
+    <string name="common_float_permission_hint">Please enable both \"Display pop-up window while running in the background\" and \"Display pop-up Window\" permissions</string>
+
     <!-- AI Transcriber Settings -->
     <string name="ai_transcriber_settings_title">AI Subtitle Settings</string>
     <string name="ai_transcriber_section_recognition">Recognition &amp; Translation</string>
@@ -32,4 +41,15 @@
     <string name="ai_trans_lang_de">Deutsch(German)</string>
     <string name="ai_trans_lang_it">Italiano(Italian)</string>
     <string name="ai_trans_lang_ru">Русский(Russian)</string>
+
+    <!-- MTP -->
+    <string name="smart_cellular_title">Improve call quality?</string>
+    <string name="smart_cellular_wifi_poor">WiFi signal poor</string>
+    <string name="smart_cellular_cellular_good">Cellular signal good</string>
+    <string name="smart_cellular_description">Your WiFi connection is unstable. Switch to cellular data to improve call quality?\n(Data charges may apply based on your plan)</string>
+    <string name="smart_cellular_improve">Improve Call Quality</string>
+    <string name="smart_cellular_keep_wifi">Continue with WiFi</string>
+    <string name="smart_cellular_switched_to_wifi">Network switched to WiFi</string>
+    <string name="smart_cellular_switched_to_cellular">Network switched to cellular data</string>
+    <string name="smart_cellular_network_switched">Network automatically switched</string>
 </resources>

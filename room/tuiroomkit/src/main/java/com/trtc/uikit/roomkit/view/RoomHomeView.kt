@@ -9,11 +9,11 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.utils.widget.ImageFilterView
-import com.trtc.tuikit.common.imageloader.ImageLoader
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.RoomCreateActivity
 import com.trtc.uikit.roomkit.RoomJoinActivity
 import com.trtc.uikit.roomkit.base.extension.getDisplayName
+import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.atomicxcore.api.login.UserProfile
 import kotlinx.coroutines.CoroutineScope

@@ -1,22 +1,27 @@
 package com.trtc.uikit.roomkit.view
 
-import android.Manifest
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.widget.Toast
 import com.trtc.uikit.roomkit.R
+import com.trtc.uikit.roomkit.barrage.BarrageInputView
+import com.trtc.uikit.roomkit.barrage.BarrageStreamView
 import com.trtc.uikit.roomkit.base.error.ErrorLocalized
+import com.trtc.uikit.roomkit.base.extension.getDisplayName
 import com.trtc.uikit.roomkit.base.extension.getSenderDisplayName
 import com.trtc.uikit.roomkit.base.log.RoomKitLogger
 import com.trtc.uikit.roomkit.base.operator.DeviceOperator
+import com.trtc.uikit.roomkit.base.operator.DeviceOperator.DeviceOperatorType
+import com.trtc.uikit.roomkit.base.report.RoomDataReporter
 import com.trtc.uikit.roomkit.base.ui.BaseView
 import com.trtc.uikit.roomkit.base.ui.RoomAlertDialog
 import com.trtc.uikit.roomkit.view.main.RoomBottomBarView
 import com.trtc.uikit.roomkit.view.main.RoomTopBarView
 import com.trtc.uikit.roomkit.view.main.RoomView
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast.Style
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.ListResultCompletionHandler
 import io.trtc.tuikit.atomicxcore.api.device.AudioRoute
@@ -32,6 +37,7 @@ import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantListener
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantStore
 import io.trtc.tuikit.atomicxcore.api.room.RoomStore
+import io.trtc.tuikit.atomicxcore.api.room.RoomType
 import io.trtc.tuikit.atomicxcore.api.room.RoomUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -67,7 +73,10 @@ class RoomMainView @JvmOverloads constructor(
     private val topBarView: RoomTopBarView by lazy { findViewById(R.id.room_top_bar) }
     private val roomView: RoomView by lazy { findViewById(R.id.room_view) }
     private val bottomBarView: RoomBottomBarView by lazy { findViewById(R.id.room_bottom_bar) }
+    private val barrageInputView: BarrageInputView? by lazy { findViewById(R.id.barrage_input_view) }
+    private val barrageStreamView: BarrageStreamView? by lazy { findViewById(R.id.barrage_stream_view) }
 
+    private var roomType = RoomType.STANDARD
     private val roomStore = RoomStore.shared()
     private val deviceStore = DeviceStore.shared()
     private var participantStore: RoomParticipantStore? = null
@@ -112,38 +121,38 @@ class RoomMainView @JvmOverloads constructor(
         override fun onOwnerChanged(newOwner: RoomUser, oldOwner: RoomUser) {
             logger.info("onOwnerChanged: newOwner=${newOwner.userID} oldOwner=${oldOwner.userID}")
             if (localUserID == newOwner.userID) {
-                Toast.makeText(context, R.string.roomkit_toast_you_are_owner, Toast.LENGTH_SHORT).show()
+                AtomicToast.show(context, context.getString(R.string.roomkit_toast_you_are_owner), Style.INFO)
             }
         }
 
         override fun onAdminSet(userInfo: RoomUser) {
             logger.info("onAdminSet: userInfo=$userInfo")
             if (localUserID == userInfo.userID) {
-                Toast.makeText(context, R.string.roomkit_toast_you_are_admin, Toast.LENGTH_SHORT).show()
+                AtomicToast.show(context, context.getString(R.string.roomkit_toast_you_are_admin), Style.INFO)
             }
         }
 
         override fun onAdminRevoked(userInfo: RoomUser) {
             logger.info("onAdminRevoked: userInfo=$userInfo")
             if (localUserID == userInfo.userID) {
-                Toast.makeText(context, R.string.roomkit_toast_you_are_no_longer_admin, Toast.LENGTH_SHORT).show()
+                AtomicToast.show(
+                    context,
+                    context.getString(R.string.roomkit_toast_you_are_no_longer_admin),
+                    Style.INFO
+                )
             }
         }
 
         override fun onParticipantDeviceClosed(device: DeviceType, operator: RoomUser) {
             logger.info("onParticipantDeviceClosed: device=$device operator:$operator")
             when (device) {
-                DeviceType.CAMERA -> Toast.makeText(
-                    context,
-                    R.string.roomkit_toast_camera_closed_by_host,
-                    Toast.LENGTH_SHORT
-                ).show()
+                DeviceType.CAMERA -> AtomicToast.show(
+                    context, context.getString(R.string.roomkit_toast_camera_closed_by_host), Style.WARNING
+                )
 
-                DeviceType.MICROPHONE -> Toast.makeText(
-                    context,
-                    R.string.roomkit_toast_muted_by_host,
-                    Toast.LENGTH_SHORT
-                ).show()
+                DeviceType.MICROPHONE -> AtomicToast.show(
+                    context, context.getString(R.string.roomkit_toast_muted_by_host), Style.WARNING
+                )
 
                 else -> Unit
             }
@@ -153,18 +162,64 @@ class RoomMainView @JvmOverloads constructor(
             logger.info("onAllDevicesDisabled: device=$device disable:$disable operator:$operator")
             when (device) {
                 DeviceType.CAMERA -> {
-                    val messageId =
-                        if (disable) R.string.roomkit_toast_all_video_disabled else R.string.roomkit_toast_all_video_enabled
-                    Toast.makeText(context, context.getString(messageId), Toast.LENGTH_SHORT).show()
+                    if (disable) {
+                        AtomicToast.show(
+                            context,
+                            context.getString(R.string.roomkit_toast_all_video_disabled),
+                            Style.WARNING
+                        )
+                    } else {
+                        AtomicToast.show(
+                            context,
+                            context.getString(R.string.roomkit_toast_all_video_enabled),
+                            Style.INFO
+                        )
+                    }
                 }
 
                 DeviceType.MICROPHONE -> {
-                    val messageId =
-                        if (disable) R.string.roomkit_toast_all_audio_disabled else R.string.roomkit_toast_all_audio_enabled
-                    Toast.makeText(context, context.getString(messageId), Toast.LENGTH_SHORT).show()
+                    if (disable) {
+                        AtomicToast.show(
+                            context,
+                            context.getString(R.string.roomkit_toast_all_audio_disabled),
+                            Style.WARNING
+                        )
+                    } else {
+                        AtomicToast.show(
+                            context,
+                            context.getString(R.string.roomkit_toast_all_audio_enabled),
+                            Style.INFO
+                        )
+                    }
                 }
 
                 else -> Unit
+            }
+        }
+
+        override fun onAudiencePromotedToParticipant(userInfo: RoomUser) {
+            if (userInfo.userID == localUserID) {
+                AtomicToast.show(context, context.getString(R.string.roomkit_switch_to_participant_byself), Style.INFO)
+            } else {
+                AtomicToast.show(
+                    context,
+                    context.getString(R.string.roomkit_switch_to_participant, userInfo.getDisplayName()), Style.INFO
+                )
+            }
+        }
+
+        override fun onParticipantDemotedToAudience(userInfo: RoomUser) {
+            if (userInfo.userID == localUserID) {
+                DeviceStore.shared().closeLocalMicrophone()
+                DeviceStore.shared().closeLocalCamera()
+            }
+        }
+
+        override fun onUserMessageDisabled(disable: Boolean, operator: RoomUser) {
+            if (disable) {
+                AtomicToast.show(context, context.getString(R.string.roomkit_toast_text_chat_disabled), Style.WARNING)
+            } else {
+                AtomicToast.show(context, context.getString(R.string.roomkit_toast_text_chat_enabled), Style.INFO)
             }
         }
     }
@@ -176,16 +231,22 @@ class RoomMainView @JvmOverloads constructor(
         }
     }
 
-    init {
-        LayoutInflater.from(context).inflate(R.layout.roomkit_view_main, this)
-    }
-
-    fun init(roomID: String, behavior: RoomBehavior, config: ConnectConfig) {
-        super.init(roomID)
-        roomView.init(roomID)
-        topBarView.init(roomID)
-        bottomBarView.init(roomID)
+    fun init(roomID: String, roomType: RoomType, behavior: RoomBehavior, config: ConnectConfig) {
+        logger.info("init roomID=$roomID, roomType=$roomType behavior:$behavior config=$config")
+        this.roomType = roomType
         connectConfig = config
+        removeAllViews()
+        if (roomType == RoomType.WEBINAR) {
+            LayoutInflater.from(context).inflate(R.layout.roomkit_main_view_webinar, this)
+        } else {
+            LayoutInflater.from(context).inflate(R.layout.roomkit_main_view_standard, this)
+        }
+        super.init(roomID)
+        roomView.init(roomID, roomType)
+        topBarView.init(roomID, roomType)
+        bottomBarView.init(roomID, roomType)
+        initBarrageInputView(roomID)
+        RoomDataReporter.reportComponent()
         when (behavior) {
             is RoomBehavior.Create -> createRoom(roomID, behavior.options)
             is RoomBehavior.Join -> joinRoom(roomID)
@@ -210,12 +271,16 @@ class RoomMainView @JvmOverloads constructor(
     }
 
     private fun createRoom(roomID: String, createRoomOptions: CreateRoomOptions) {
-        roomStore.createAndJoinRoom(roomID, createRoomOptions, object : CompletionHandler {
+        roomStore.createAndJoinRoom(roomID, roomType, createRoomOptions, object : CompletionHandler {
             override fun onSuccess() {
-                logger.info("createAndJoinRoom success ${roomStore.state.currentRoom.value}")
+                val roomInfo = roomStore.state.currentRoom.value
+                logger.info("createAndJoinRoom success $roomInfo")
                 getParticipantList()
                 connectConfig?.let {
                     initConnectConfig(it)
+                }
+                roomInfo?.let {
+                    initBarrageStreamView(it)
                 }
             }
 
@@ -228,12 +293,16 @@ class RoomMainView @JvmOverloads constructor(
     }
 
     private fun joinRoom(roomID: String) {
-        roomStore.joinRoom(roomID = roomID, completion = object : CompletionHandler {
+        roomStore.joinRoom(roomID = roomID, roomType, completion = object : CompletionHandler {
             override fun onSuccess() {
-                logger.info("joinRoom success ${roomStore.state.currentRoom.value}")
+                val roomInfo = roomStore.state.currentRoom.value
+                logger.info("joinRoom success $roomInfo")
                 getParticipantList()
                 connectConfig?.let {
                     initConnectConfig(it)
+                }
+                roomInfo?.let {
+                    initBarrageStreamView(it)
                 }
             }
 
@@ -262,19 +331,21 @@ class RoomMainView @JvmOverloads constructor(
 
     private fun initConnectConfig(config: ConnectConfig) {
         scope.launch {
-            if (config.autoEnableMicrophone) {
-                try {
-                    deviceOperator.unmuteMicrophone(participantStore)
-                } catch (e: Exception) {
-                    logger.error("Failed to open microphone: ${e.message}")
+            if (roomType == RoomType.STANDARD) {
+                if (config.autoEnableMicrophone) {
+                    try {
+                        deviceOperator.unmuteMicrophone(participantStore)
+                    } catch (e: Exception) {
+                        logger.error("Failed to open microphone: ${e.message}")
+                    }
                 }
-            }
 
-            if (config.autoEnableCamera) {
-                try {
-                    deviceOperator.openCamera()
-                } catch (e: Exception) {
-                    logger.error("Failed to open camera: ${e.message}")
+                if (config.autoEnableCamera) {
+                    try {
+                        deviceOperator.openCamera()
+                    } catch (e: Exception) {
+                        logger.error("Failed to open camera: ${e.message}")
+                    }
                 }
             }
         }
@@ -335,23 +406,23 @@ class RoomMainView @JvmOverloads constructor(
         scope.launch {
             try {
                 val hasPermission = when (device) {
-                    DeviceType.MICROPHONE -> deviceOperator.requestPermission(Manifest.permission.RECORD_AUDIO)
-                    DeviceType.CAMERA -> deviceOperator.requestPermission(Manifest.permission.CAMERA)
+                    DeviceType.MICROPHONE -> deviceOperator.requestPermission(DeviceOperatorType.MICROPHONE)
+                    DeviceType.CAMERA -> deviceOperator.requestPermission(DeviceOperatorType.CAMERA)
                     else -> {
                         logger.warn("Unsupported device type: $device")
                         false
                     }
                 }
-                
+
                 logger.info("requestPermission result hasPermission: $hasPermission")
-                
+
                 if (hasPermission) {
                     val store = participantStore
                     if (store == null) {
                         logger.error("participantStore is null, cannot accept invitation")
                         return@launch
                     }
-                    
+
                     store.acceptOpenDeviceInvitation(
                         userID = invitation.senderUserID,
                         device = device,
@@ -410,5 +481,18 @@ class RoomMainView @JvmOverloads constructor(
                 (context as? Activity)?.finish()
             }
             .show()
+    }
+
+    private fun initBarrageInputView(roomID: String) {
+        if (roomType == RoomType.WEBINAR) {
+            barrageInputView?.init(roomID)
+        }
+    }
+
+    private fun initBarrageStreamView(roomInfo: RoomInfo) {
+        if (roomType == RoomType.WEBINAR) {
+            val ownerUserId = roomInfo.roomOwner.userID
+            barrageStreamView?.init(roomID)
+        }
     }
 }

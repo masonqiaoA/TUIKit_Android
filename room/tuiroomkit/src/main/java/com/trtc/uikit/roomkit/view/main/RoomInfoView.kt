@@ -8,10 +8,10 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
-import com.trtc.tuikit.common.util.ToastUtil
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.extension.getDisplayName
 import com.trtc.uikit.roomkit.base.ui.BaseView
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicxcore.api.room.RoomInfo
 import io.trtc.tuikit.atomicxcore.api.room.RoomStore
 import kotlinx.coroutines.CoroutineScope
@@ -42,6 +42,10 @@ class RoomInfoView @JvmOverloads constructor(
         setupListeners()
     }
 
+    public override fun init(roomID: String) {
+        super.init(roomID)
+    }
+
     override fun initStore(roomID: String) {
         roomStore = RoomStore.shared()
     }
@@ -69,13 +73,17 @@ class RoomInfoView @JvmOverloads constructor(
     private fun setupListeners() {
         btnCopyRoomID.setOnClickListener {
             copyToClipboard(tvRoomID.text.toString())
-            ToastUtil.toastShortMessage(context.getString(R.string.roomkit_toast_room_id_copied))
+            AtomicToast.show(context, context.getString(R.string.roomkit_toast_room_id_copied), AtomicToast.Style.INFO)
         }
 
         btnCopyInvitationLink.setOnClickListener {
             val invitationText = generateInvitationText()
             copyToClipboard(invitationText)
-            ToastUtil.toastShortMessage(context.getString(R.string.roomkit_toast_room_info_copied))
+            AtomicToast.show(
+                context,
+                context.getString(R.string.roomkit_toast_room_info_copied),
+                AtomicToast.Style.INFO
+            )
         }
     }
 

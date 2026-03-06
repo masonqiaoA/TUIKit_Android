@@ -15,14 +15,15 @@ import com.trtc.uikit.roomkit.base.error.ErrorLocalized
 import com.trtc.uikit.roomkit.base.extension.getDisplayName
 import com.trtc.uikit.roomkit.base.log.RoomKitLogger
 import com.trtc.uikit.roomkit.base.ui.BaseView
-import com.trtc.uikit.roomkit.base.ui.RoomPopupDialog
 import com.trtc.uikit.roomkit.base.ui.RoomActionSheetDialog
+import com.trtc.uikit.roomkit.base.ui.RoomPopupDialog
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.device.AudioRoute
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.room.ParticipantRole
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantStore
 import io.trtc.tuikit.atomicxcore.api.room.RoomStore
+import io.trtc.tuikit.atomicxcore.api.room.RoomType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -51,6 +52,7 @@ class RoomTopBarView @JvmOverloads constructor(
     private val tvDuration: TextView by lazy { findViewById(R.id.tv_duration) }
     private val llExitRoom: LinearLayout by lazy { findViewById(R.id.ll_exit_room) }
 
+    private var roomType = RoomType.STANDARD
     private var roomStore = RoomStore.shared()
     private var participantStore: RoomParticipantStore? = null
     private val deviceStore = DeviceStore.shared()
@@ -74,6 +76,13 @@ class RoomTopBarView @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.roomkit_view_top_bar, this)
         initView()
         startDurationTimer()
+    }
+
+    fun init(roomID: String, roomType: RoomType) {
+        this.roomType = roomType
+        super.init(roomID)
+        ivCameraSwitch.visibility = if (roomType == RoomType.WEBINAR) GONE else VISIBLE
+        ivAudioRoute.visibility = if (roomType == RoomType.WEBINAR) GONE else VISIBLE
     }
 
     override fun initStore(roomID: String) {

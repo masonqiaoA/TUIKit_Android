@@ -1,7 +1,7 @@
 package com.trtc.uikit.roomkit
 
 import android.os.Bundle
-import com.trtc.tuikit.common.FullScreenActivity
+import io.trtc.tuikit.atomicx.common.FullScreenActivity
 import com.trtc.uikit.roomkit.view.RoomHomeView
 
 /**
