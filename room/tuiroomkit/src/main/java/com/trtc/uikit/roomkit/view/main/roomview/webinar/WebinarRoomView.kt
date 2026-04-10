@@ -1,4 +1,4 @@
-package com.trtc.uikit.roomkit.view.main.roomview
+package com.trtc.uikit.roomkit.view.main.roomview.webinar
 
 import android.annotation.SuppressLint
 import android.content.Context

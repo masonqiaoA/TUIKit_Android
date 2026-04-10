@@ -1,4 +1,4 @@
-package com.trtc.uikit.roomkit.view.main.roomview
+package com.trtc.uikit.roomkit.view.main.roomview.webinar
 
 import android.content.Context
 import android.view.View

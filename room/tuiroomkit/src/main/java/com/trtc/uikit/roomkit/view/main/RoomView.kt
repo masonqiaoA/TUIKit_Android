@@ -5,8 +5,8 @@ import android.util.AttributeSet
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.trtc.uikit.roomkit.view.main.roomview.StandardRoomView
-import com.trtc.uikit.roomkit.view.main.roomview.WebinarRoomView
-import com.trtc.uikit.roomkit.view.main.roomview.WebinarVideoViewAdapterImpl
+import com.trtc.uikit.roomkit.view.main.roomview.webinar.WebinarRoomView
+import com.trtc.uikit.roomkit.view.main.roomview.webinar.WebinarVideoViewAdapterImpl
 import io.trtc.tuikit.atomicxcore.api.room.RoomType
 
 /**

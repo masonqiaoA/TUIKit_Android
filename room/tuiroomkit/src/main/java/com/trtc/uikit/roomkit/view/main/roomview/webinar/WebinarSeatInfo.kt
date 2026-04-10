@@ -1,4 +1,4 @@
-package com.trtc.uikit.roomkit.view.main.roomview
+package com.trtc.uikit.roomkit.view.main.roomview.webinar
 
 import com.tencent.cloud.tuikit.engine.room.TUIRoomDefine
 import com.tencent.cloud.tuikit.engine.room.TUIRoomDefine.SeatFullInfo
