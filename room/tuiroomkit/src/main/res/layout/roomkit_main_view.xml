@@ -22,6 +22,28 @@
         app:layout_constraintTop_toBottomOf="@id/room_top_bar"
         app:layout_constraintVertical_weight="1" />
 
+    <com.trtc.uikit.roomkit.aitranscription.subtitleview.AISubtitleView
+        android:id="@+id/ai_subtitle_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/room_bottom_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.trtc.uikit.roomkit.view.main.RoomAIRecordFloatingView
+        android:id="@+id/ai_record_floating_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="10dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/room_top_bar" />
+
     <com.trtc.uikit.roomkit.view.main.RoomBottomBarView
         android:id="@+id/room_bottom_bar"
         android:layout_width="match_parent"

@@ -58,13 +58,13 @@ class BarrageItemDefaultAdapter(
             isOwner -> bindRoleBadge(
                 viewHolder, barrage, fontSize,
                 R.string.roomkit_role_owner,
-                R.color.roomkit_barrage_owner_bg
+                R.drawable.roomkit_barrage_bg_owner_flag
             )
 
             isAdmin -> bindRoleBadge(
                 viewHolder, barrage, fontSize,
                 R.string.roomkit_role_admin,
-                R.color.roomkit_barrage_admin_bg
+                R.drawable.roomkit_barrage_bg_admin_flag
             )
 
             else -> bindNormalUser(viewHolder, barrage, fontSize)
@@ -76,14 +76,12 @@ class BarrageItemDefaultAdapter(
         barrage: Barrage,
         fontSize: Int,
         roleTextResId: Int,
-        bgColorResId: Int
+        bgDrawableResId: Int
     ) {
         viewHolder.textAnchorFlag.apply {
             visibility = View.VISIBLE
             text = context.getString(roleTextResId)
-            setBackgroundColor(
-                ResourcesCompat.getColor(context.resources, bgColorResId, context.theme)
-            )
+            setBackgroundResource(bgDrawableResId)
         }
 
         val placeHolder = getSpacesStringByDP(viewHolder.textMsgContent)

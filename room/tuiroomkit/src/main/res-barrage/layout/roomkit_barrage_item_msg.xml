@@ -30,7 +30,7 @@
             android:layout_width="44dp"
             android:layout_height="18dp"
             android:layout_marginTop="1dp"
-            android:background="@drawable/roomkit_barrage_bg_anchor_flag"
+            android:background="@drawable/roomkit_barrage_bg_admin_flag"
             android:gravity="center"
             android:text="@string/roomkit_role_owner"
             android:textAllCaps="true"

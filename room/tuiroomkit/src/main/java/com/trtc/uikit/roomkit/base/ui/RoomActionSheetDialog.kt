@@ -2,13 +2,17 @@ package com.trtc.uikit.roomkit.base.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -28,6 +32,7 @@ class RoomActionSheetDialog private constructor(
     private lateinit var tvTips: TextView
     private lateinit var llActions: LinearLayout
     private lateinit var dragIndicator: View
+    private lateinit var dividerTop: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +43,7 @@ class RoomActionSheetDialog private constructor(
         tvTips = findViewById(R.id.tv_tips)!!
         llActions = findViewById(R.id.ll_actions)!!
         dragIndicator = findViewById(R.id.drag_indicator)!!
-
+        dividerTop = findViewById(R.id.view_divider_top)!!
         setupView()
         setupWindow()
     }
@@ -47,9 +52,11 @@ class RoomActionSheetDialog private constructor(
         if (builder.tipsText.isNotEmpty()) {
             tvTips.text = builder.tipsText
             tvTips.visibility = View.VISIBLE
+            dividerTop.visibility = View.VISIBLE
             topDivideView.visibility = View.VISIBLE
         } else {
             tvTips.visibility = View.GONE
+            dividerTop.visibility = View.GONE
             topDivideView.visibility = View.GONE
         }
         rootView.setBackgroundResource(builder.backgroundRes ?: R.drawable.roomkit_bg_bottom_sheet_dialog)
@@ -81,12 +88,26 @@ class RoomActionSheetDialog private constructor(
     }
 
     private fun addActionButton(action: ActionItem) {
-        val button = LayoutInflater.from(context)
-            .inflate(R.layout.roomkit_item_action_sheet, llActions, false) as TextView
+        val itemView = LayoutInflater.from(context)
+            .inflate(R.layout.roomkit_item_action_sheet, llActions, false)
 
-        button.text = action.text
-        button.setTextColor(
-            ContextCompat.getColor(
+        val iconView = itemView.findViewById<ImageView>(R.id.iv_action_icon)
+        val textView = itemView.findViewById<TextView>(R.id.tv_action_text)
+
+        val container = itemView as LinearLayout
+        if (action.iconRes != 0) {
+            iconView.setImageResource(action.iconRes)
+            iconView.visibility = View.VISIBLE
+            container.gravity = Gravity.CENTER_VERTICAL
+        } else {
+            iconView.visibility = View.GONE
+            container.gravity = Gravity.CENTER
+        }
+
+        textView.text = action.text
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, action.textSizeSp)
+        textView.setTextColor(
+            action.textColor ?: ContextCompat.getColor(
                 context,
                 when {
                     action.isWarning -> R.color.roomkit_color_end_room
@@ -95,12 +116,13 @@ class RoomActionSheetDialog private constructor(
                 }
             )
         )
-        button.setOnClickListener {
+
+        itemView.setOnClickListener {
             action.onClick?.invoke()
             dismiss()
         }
 
-        llActions.addView(button)
+        llActions.addView(itemView)
     }
 
     private fun setupWindow() {
@@ -132,6 +154,9 @@ class RoomActionSheetDialog private constructor(
     internal data class ActionItem(
         val text: String,
         val isWarning: Boolean,
+        @DrawableRes val iconRes: Int,
+        @ColorInt val textColor: Int?,
+        val textSizeSp: Float,
         val onClick: (() -> Unit)?
     )
 
@@ -160,18 +185,24 @@ class RoomActionSheetDialog private constructor(
         fun addAction(
             @StringRes textResId: Int,
             isWarning: Boolean = false,
+            @DrawableRes iconRes: Int = 0,
+            @ColorInt textColor: Int? = null,
+            textSizeSp: Float = 18f,
             onClick: (() -> Unit)? = null
         ): Builder {
-            actions.add(ActionItem(context.getString(textResId), isWarning, onClick))
+            actions.add(ActionItem(context.getString(textResId), isWarning, iconRes, textColor, textSizeSp, onClick))
             return this
         }
 
         fun addAction(
             text: String,
             isWarning: Boolean = false,
+            @DrawableRes iconRes: Int = 0,
+            @ColorInt textColor: Int? = null,
+            textSizeSp: Float = 18f,
             onClick: (() -> Unit)? = null
         ): Builder {
-            actions.add(ActionItem(text, isWarning, onClick))
+            actions.add(ActionItem(text, isWarning, iconRes, textColor, textSizeSp, onClick))
             return this
         }
 

@@ -166,7 +166,11 @@ class RoomCreateView @JvmOverloads constructor(
     private fun handleCreateRoomClick() {
         val roomID = generateRoomID()
         val localUserName = LoginStore.shared.loginState.loginUserInfo.value?.getDisplayName() ?: ""
-        val roomName = context.getString(R.string.roomkit_user_room, localUserName)
+        val roomName = if (selectedRoomType == RoomType.WEBINAR) {
+            context.getString(R.string.roomkit_user_webinar_room, localUserName)
+        } else {
+            context.getString(R.string.roomkit_user_room, localUserName)
+        }
         val intent = Intent(context, RoomMainActivity::class.java).apply {
             putExtra(RoomMainActivity.EXTRA_ROOM_ID, roomID)
             putExtra(RoomMainActivity.EXTRA_ROOM_NAME, roomName)

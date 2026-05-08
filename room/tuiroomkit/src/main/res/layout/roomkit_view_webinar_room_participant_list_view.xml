@@ -44,7 +44,7 @@
         android:layout_marginTop="16dp"
         android:clipToPadding="false"
         android:overScrollMode="never"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/ll_bottom_actions"
         app:layout_constraintTop_toBottomOf="@id/tab_layout_group" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -55,7 +55,30 @@
         android:clipToPadding="false"
         android:overScrollMode="never"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/ll_bottom_actions"
         app:layout_constraintTop_toBottomOf="@id/tab_layout_group" />
+
+    <LinearLayout
+        android:id="@+id/ll_bottom_actions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_mute_all"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/roomkit_bg_bottom_action_button"
+            android:gravity="center"
+            android:text="@string/roomkit_mute_all_audio"
+            android:textColor="@color/roomkit_color_text_action_button"
+            android:textSize="14sp" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

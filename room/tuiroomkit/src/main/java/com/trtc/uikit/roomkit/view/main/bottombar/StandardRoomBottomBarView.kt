@@ -11,7 +11,10 @@ import com.trtc.uikit.roomkit.base.log.RoomKitLogger
 import com.trtc.uikit.roomkit.base.operator.DeviceOperator
 import com.trtc.uikit.roomkit.base.ui.BaseView
 import com.trtc.uikit.roomkit.base.ui.RoomPopupDialog
+import com.trtc.uikit.roomkit.view.main.RoomBottomBarViewListener
 import com.trtc.uikit.roomkit.view.main.RoomParticipantListView
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast.Style
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
 import io.trtc.tuikit.atomicxcore.api.room.ParticipantRole
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantStore
@@ -26,6 +29,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
+
 class StandardRoomBottomBarView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -33,6 +37,8 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
 ) : BaseView(context, attrs, defStyleAttr) {
 
     private val logger = RoomKitLogger.getLogger("StandardRoomBottomBarView")
+
+    var listener: RoomBottomBarViewListener? = null
 
     private val scope = CoroutineScope(Dispatchers.Main)
     private var subscribeJob: Job? = null
@@ -49,6 +55,8 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
     private val ivCamera: ImageView by lazy { findViewById(R.id.iv_camera) }
     private val tvCamera: TextView by lazy { findViewById(R.id.tv_camera) }
 
+    private val llAiTool: LinearLayout by lazy { findViewById(R.id.ll_ai_tool) }
+
     private var participantStore: RoomParticipantStore? = null
     private val roomStore = RoomStore.shared()
 
@@ -56,7 +64,7 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
     private var currentRoomID: String? = null
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.roomkit_bottom_bar_standard, this)
+        LayoutInflater.from(context).inflate(R.layout.roomkit_view_bottom_bar_standard, this)
     }
 
     public override fun init(roomID: String) {
@@ -114,6 +122,7 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
         llParticipants.setOnClickListener { handleParticipantsClick() }
         llMicrophone.setOnClickListener { handleMicrophoneClick() }
         llCamera.setOnClickListener { handleCameraClick() }
+        llAiTool.setOnClickListener { handleAiToolClick() }
     }
 
     private fun updateParticipantCount(count: Int) {
@@ -184,6 +193,16 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
         if (currentStatus == DeviceStatus.ON) {
             deviceOperator.muteMicrophone(participantStore)
         } else {
+            val isAllMuted = roomStore.state.currentRoom.value?.isAllMicrophoneDisabled ?: false
+            if (isAllMuted) {
+                logger.info("handleMicrophoneClick: All participants are muted, cannot unmute")
+                AtomicToast.show(
+                    context,
+                    context.getString(R.string.roomkit_tip_all_muted_cannot_unmute),
+                    Style.WARNING
+                )
+                return
+            }
             scope.launch {
                 try {
                     deviceOperator.unmuteMicrophone(participantStore)
@@ -209,5 +228,10 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
                 }
             }
         }
+    }
+
+    private fun handleAiToolClick() {
+        logger.info("handleAiToolClick")
+        listener?.onAIToolsButtonTapped()
     }
 }

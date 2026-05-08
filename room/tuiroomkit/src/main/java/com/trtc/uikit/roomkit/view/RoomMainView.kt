@@ -3,9 +3,15 @@ package com.trtc.uikit.roomkit.view
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import androidx.core.content.ContextCompat
 import com.trtc.uikit.roomkit.R
+import com.trtc.uikit.roomkit.aitranscription.AIMinutesActivity
+import com.trtc.uikit.roomkit.aitranscription.AITranscriptionSettingActivity
+import com.trtc.uikit.roomkit.aitranscription.repository.AITranscriberRepository
+import com.trtc.uikit.roomkit.aitranscription.subtitleview.AISubtitleView
 import com.trtc.uikit.roomkit.barrage.BarrageInputView
 import com.trtc.uikit.roomkit.barrage.BarrageStreamView
 import com.trtc.uikit.roomkit.base.error.ErrorLocalized
@@ -16,8 +22,11 @@ import com.trtc.uikit.roomkit.base.operator.DeviceOperator
 import com.trtc.uikit.roomkit.base.operator.DeviceOperator.DeviceOperatorType
 import com.trtc.uikit.roomkit.base.report.RoomDataReporter
 import com.trtc.uikit.roomkit.base.ui.BaseView
+import com.trtc.uikit.roomkit.base.ui.RoomActionSheetDialog
 import com.trtc.uikit.roomkit.base.ui.RoomAlertDialog
+import com.trtc.uikit.roomkit.view.main.ParticipantManagerView
 import com.trtc.uikit.roomkit.view.main.RoomBottomBarView
+import com.trtc.uikit.roomkit.view.main.RoomBottomBarViewListener
 import com.trtc.uikit.roomkit.view.main.RoomTopBarView
 import com.trtc.uikit.roomkit.view.main.RoomView
 import com.trtc.uikit.roomkit.view.main.screenshare.ScreenShareOverlayView
@@ -33,6 +42,7 @@ import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.atomicxcore.api.room.CreateRoomOptions
 import io.trtc.tuikit.atomicxcore.api.room.DeviceRequestInfo
 import io.trtc.tuikit.atomicxcore.api.room.KickedOutOfRoomReason
+import io.trtc.tuikit.atomicxcore.api.room.ParticipantRole
 import io.trtc.tuikit.atomicxcore.api.room.RoomInfo
 import io.trtc.tuikit.atomicxcore.api.room.RoomListener
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
@@ -56,7 +66,7 @@ class RoomMainView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : BaseView(context, attrs, defStyleAttr) {
+) : BaseView(context, attrs, defStyleAttr), RoomBottomBarViewListener {
 
     init {
         LayoutInflater.from(context).inflate(R.layout.roomkit_main_view, this)
@@ -81,6 +91,7 @@ class RoomMainView @JvmOverloads constructor(
     private val topBarView: RoomTopBarView by lazy { findViewById(R.id.room_top_bar) }
     private val roomView: RoomView by lazy { findViewById(R.id.room_view) }
     private val bottomBarView: RoomBottomBarView by lazy { findViewById(R.id.room_bottom_bar) }
+    private val aiSubtitleView: AISubtitleView by lazy { findViewById(R.id.ai_subtitle_view) }
     private val barrageInputView: BarrageInputView by lazy { findViewById(R.id.barrage_input_view) }
     private val barrageStreamView: BarrageStreamView by lazy { findViewById(R.id.barrage_stream_view) }
     private val screenShareOverlayView: ScreenShareOverlayView by lazy { findViewById(R.id.screen_share_overlay_view) }
@@ -93,6 +104,8 @@ class RoomMainView @JvmOverloads constructor(
     private var microphoneInvitationDialog: Dialog? = null
     private var localUserID = LoginStore.shared.loginState.loginUserInfo.value?.userID
     private var connectConfig: ConnectConfig? = null
+
+    private lateinit var repository: AITranscriberRepository
 
     private val participantListener = object : RoomParticipantListener() {
         override fun onDeviceInvitationReceived(invitation: DeviceRequestInfo) {
@@ -131,6 +144,9 @@ class RoomMainView @JvmOverloads constructor(
             logger.info("onOwnerChanged: newOwner=${newOwner.userID} oldOwner=${oldOwner.userID}")
             if (localUserID == newOwner.userID) {
                 AtomicToast.show(context, context.getString(R.string.roomkit_toast_you_are_owner), Style.INFO)
+                if (isAISubtitleVisible()) {
+                    hideAISubtitleView()
+                }
             }
         }
 
@@ -156,15 +172,21 @@ class RoomMainView @JvmOverloads constructor(
             logger.info("onParticipantDeviceClosed: device=$device operator:$operator")
             when (device) {
                 DeviceType.CAMERA -> AtomicToast.show(
-                    context, context.getString(R.string.roomkit_toast_camera_closed_by_host), Style.WARNING
+                    context,
+                    context.getString(R.string.roomkit_toast_camera_closed_by_host, operator.getDisplayName()),
+                    Style.WARNING
                 )
 
                 DeviceType.MICROPHONE -> AtomicToast.show(
-                    context, context.getString(R.string.roomkit_toast_muted_by_host), Style.WARNING
+                    context,
+                    context.getString(R.string.roomkit_toast_muted_by_host, operator.getDisplayName()),
+                    Style.WARNING
                 )
 
                 DeviceType.SCREEN_SHARE -> AtomicToast.show(
-                    context, context.getString(R.string.roomkit_toast_screen_share_closed_by_host), Style.WARNING
+                    context,
+                    context.getString(R.string.roomkit_toast_screen_share_closed_by_host, operator.getDisplayName()),
+                    Style.WARNING
                 )
             }
         }
@@ -233,6 +255,12 @@ class RoomMainView @JvmOverloads constructor(
                 AtomicToast.show(context, context.getString(R.string.roomkit_toast_text_chat_enabled), Style.INFO)
             }
         }
+
+        override fun onDeviceRequestRejected(request: DeviceRequestInfo, operator: RoomUser) {
+            if (request.device == DeviceType.MICROPHONE) {
+                AtomicToast.show(context, context.getString(R.string.roomkit_toast_raise_hand_rejected), Style.WARNING)
+            }
+        }
     }
 
     private val roomListener = object : RoomListener() {
@@ -246,10 +274,13 @@ class RoomMainView @JvmOverloads constructor(
         logger.info("init roomID=$roomID, roomType=$roomType behavior:$behavior config=$config")
         this.roomType = roomType
         connectConfig = config
+        repository = AITranscriberRepository(roomID)
+        ParticipantManagerView.bindRepository(repository) { hideAISubtitleView() }
         super.init(roomID)
         roomView.init(roomID, roomType)
         topBarView.init(roomID, roomType)
         bottomBarView.init(roomID, roomType)
+        bottomBarView.listener = this
         if (roomType == RoomType.WEBINAR) {
             barrageInputView.init(roomID)
             barrageStreamView.init(roomID)
@@ -273,6 +304,8 @@ class RoomMainView @JvmOverloads constructor(
     override fun addObserver() {
         val participantStore = participantStore ?: return
         participantStore.addRoomParticipantListener(participantListener)
+        subscribeSourceLanguageChange()
+        subscribeTranscriptionStartChange()
         roomStore.addRoomListener(roomListener)
         scope.launch {
             participantStore.state.localParticipant
@@ -285,9 +318,36 @@ class RoomMainView @JvmOverloads constructor(
     override fun removeObserver() {
         participantStore?.removeRoomParticipantListener(participantListener)
         roomStore.removeRoomListener(roomListener)
+        repository.stopTranscription()
+        repository.destroy()
         dismissCameraInvitationDialog()
         dismissMicrophoneInvitationDialog()
         scope.cancel()
+    }
+
+    private fun subscribeSourceLanguageChange() {
+        scope.launch {
+            repository.selectedSourceLanguage.collect {
+                val localParticipant = participantStore?.state?.localParticipant?.value
+                if (!localParticipant?.userID.isNullOrEmpty() && localParticipant?.role != ParticipantRole.OWNER) {
+                    AtomicToast.show(
+                        context,
+                        context.getString(R.string.roomkit_transcription_owner_changed_source_language),
+                        Style.INFO
+                    )
+                }
+            }
+        }
+    }
+
+    private fun subscribeTranscriptionStartChange() {
+        scope.launch {
+            repository.isTranscriptionStart.collect { isTranscriptionStart ->
+                if (!isTranscriptionStart && isAISubtitleVisible()) {
+                    hideAISubtitleView()
+                }
+            }
+        }
     }
 
     private fun createRoom(roomID: String, createRoomOptions: CreateRoomOptions) {
@@ -516,5 +576,72 @@ class RoomMainView @JvmOverloads constructor(
                 (context as? Activity)?.finish()
             }
             .show()
+    }
+
+    fun isAISubtitleVisible(): Boolean {
+        return aiSubtitleView.visibility == VISIBLE
+    }
+
+    fun showAISubtitleView() {
+        aiSubtitleView.visibility = VISIBLE
+        aiSubtitleView.bindRepository(repository)
+        aiSubtitleView.onTap = {
+            AITranscriptionSettingActivity.bindRepository(repository)
+            val intent = Intent(context, AITranscriptionSettingActivity::class.java)
+            context.startActivity(intent)
+        }
+    }
+
+    fun hideAISubtitleView() {
+        aiSubtitleView.visibility = GONE
+    }
+
+    // MARK: - RoomBottomBarViewListener
+
+    override fun onAIToolsButtonTapped() {
+        val isSubtitleVisible = isAISubtitleVisible()
+
+        val builder = RoomActionSheetDialog.Builder(context)
+        if (isSubtitleVisible) {
+            builder.addAction(
+                context.getString(R.string.roomkit_transcription_close_subtitle),
+                false,
+                R.drawable.roomkit_ic_ai_subtitle,
+                ContextCompat.getColor(context, R.color.roomkit_color_text_grey),
+                14f
+            ) {
+                hideAISubtitleView()
+            }
+        } else {
+            builder.addAction(
+                context.getString(R.string.roomkit_transcription_open_subtitle),
+                false,
+                R.drawable.roomkit_ic_ai_subtitle,
+                ContextCompat.getColor(context, R.color.roomkit_color_text_grey),
+                14f
+            ) {
+                showAISubtitleView()
+                val localParticipant = participantStore?.state?.localParticipant?.value
+                if (localParticipant != null && localParticipant.role == ParticipantRole.OWNER) {
+                    repository.startTranscription()
+                }
+            }
+        }
+        builder.addAction(
+            context.getString(R.string.roomkit_transcription_open_minutes),
+            false,
+            R.drawable.roomkit_ic_ai_minutes,
+            ContextCompat.getColor(context, R.color.roomkit_color_text_grey),
+            14f
+        ) {
+            val localParticipant = participantStore?.state?.localParticipant?.value
+            if (localParticipant != null && localParticipant.role == ParticipantRole.OWNER) {
+                repository.startTranscription()
+            }
+            AIMinutesActivity.bindRepository(repository)
+            val intent = Intent(context, AIMinutesActivity::class.java)
+            context.startActivity(intent)
+        }
+        builder.show()
     }
 }

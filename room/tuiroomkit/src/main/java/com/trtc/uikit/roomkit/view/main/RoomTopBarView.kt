@@ -17,6 +17,7 @@ import com.trtc.uikit.roomkit.base.log.RoomKitLogger
 import com.trtc.uikit.roomkit.base.ui.BaseView
 import com.trtc.uikit.roomkit.base.ui.RoomActionSheetDialog
 import com.trtc.uikit.roomkit.base.ui.RoomPopupDialog
+import com.trtc.uikit.roomkit.base.event.RoomEventNotifier
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.device.AudioRoute
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
@@ -226,6 +227,8 @@ class RoomTopBarView @JvmOverloads constructor(
 
     private fun handleLeaveRoom() {
         logger.info("User confirmed to leave room")
+        RoomEventNotifier.notifyWillLeaveRoom()
+        
         roomStore.leaveRoom(object : CompletionHandler {
             override fun onSuccess() {
                 logger.info("Leave room success")

@@ -39,4 +39,18 @@
     <color name="roomkit_color_text_action_button">#B2BBD1</color>
     <color name="roomkit_color_video_view_bg">#181A1E</color>
     <color name="roomkit_color_screen_capture_float_bg">#7F000000</color>
+    <color name="roomkit_color_ai_record_border">#4E54614D</color>
+    <color name="roomkit_color_ai_record_bg">#22262E</color>
+    <color name="roomkit_color_ai_record_text">#F2F5FC</color>
+
+    <!-- AI Transcription colors -->
+    <color name="roomkit_color_ai_shadow">#99000000</color>
+    <color name="roomkit_color_ai_text_white_b3">#B3FFFFFF</color>
+    <color name="roomkit_color_ai_timestamp_blue">#FF4D99FF</color>
+    <color name="roomkit_color_ai_subtitle_bg">#80000000</color>
+    <color name="roomkit_color_ai_minutes_text_primary">#FF21262E</color>
+    <color name="roomkit_color_ai_minutes_text_secondary">#9921262E</color>
+    <color name="roomkit_color_ai_minutes_timestamp">#FF8F8F94</color>
+    <color name="roomkit_color_ai_minutes_item_bg">#FFF2F5FA</color>
+    <color name="roomkit_color_ai_setting_shadow">#26000000</color>
 </resources>

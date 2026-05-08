@@ -3,17 +3,24 @@ package com.trtc.uikit.roomkit.view.main.participantlist
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.widget.LinearLayout
+import androidx.appcompat.widget.AppCompatButton
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayout
 import com.trtc.uikit.roomkit.R
+import com.trtc.uikit.roomkit.base.error.ErrorLocalized
 import com.trtc.uikit.roomkit.base.log.RoomKitLogger
 import com.trtc.uikit.roomkit.base.ui.BaseView
+import com.trtc.uikit.roomkit.base.ui.RoomAlertDialog
 import com.trtc.uikit.roomkit.base.ui.RoomPopupDialog
 import com.trtc.uikit.roomkit.view.main.AudienceManagerView
 import com.trtc.uikit.roomkit.view.main.AudienceManagerView.OnAudienceActionListener
 import com.trtc.uikit.roomkit.view.main.ParticipantManagerView
 import com.trtc.uikit.roomkit.view.main.ParticipantManagerView.OnParticipantActionListener
+import io.trtc.tuikit.atomicxcore.api.CompletionHandler
+import io.trtc.tuikit.atomicxcore.api.device.DeviceType
 import io.trtc.tuikit.atomicxcore.api.room.ParticipantRole
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantStore
@@ -43,6 +50,8 @@ class WebinarRoomParticipantListView @JvmOverloads constructor(
     private val tabLayout: TabLayout by lazy { findViewById(R.id.tab_layout) }
     private val rvParticipants: RecyclerView by lazy { findViewById(R.id.rv_participants) }
     private val rvAudience: RecyclerView by lazy { findViewById(R.id.rv_audience) }
+    private val llBottomActions: LinearLayout by lazy { findViewById(R.id.ll_bottom_actions) }
+    private val btnMuteAll: AppCompatButton by lazy { findViewById(R.id.btn_mute_all) }
     private lateinit var participantTab: TabLayout.Tab
     private lateinit var audienceTab: TabLayout.Tab
 
@@ -100,9 +109,18 @@ class WebinarRoomParticipantListView @JvmOverloads constructor(
             }
 
             launch {
+                participantStore.state.localParticipant.collect { localParticipant ->
+                    localParticipant?.let {
+                        updateControlButtonsVisibility(it.role)
+                    }
+                }
+            }
+
+            launch {
                 roomStore.state.currentRoom.collect { roomInfo ->
                     roomInfo?.let {
                         updateTabView(it.participantCount, it.audienceCount)
+                        updateMuteAllButton(it.isAllMicrophoneDisabled)
                     }
                 }
             }
@@ -114,6 +132,8 @@ class WebinarRoomParticipantListView @JvmOverloads constructor(
         subscribeStateJob = null
         participantManagerDialog?.dismiss()
         participantManagerDialog = null
+        audienceManagerDialog?.dismiss()
+        audienceManagerDialog = null
     }
 
     private fun initView() {
@@ -157,6 +177,10 @@ class WebinarRoomParticipantListView @JvmOverloads constructor(
         audienceAdapter.setOnItemClickListener { audience ->
             showAudienceActionDialog(audience)
         }
+
+        btnMuteAll.setOnClickListener {
+            handleMuteAllClick()
+        }
     }
 
     private fun updateParticipantList(participants: List<RoomParticipant>) {
@@ -170,6 +194,21 @@ class WebinarRoomParticipantListView @JvmOverloads constructor(
 
     private fun updateAudienceList(audience: List<RoomUser>) {
         audienceAdapter.updateData(audience)
+    }
+
+    private fun updateControlButtonsVisibility(role: ParticipantRole) {
+        val shouldShowControls = role == ParticipantRole.OWNER || role == ParticipantRole.ADMIN
+        llBottomActions.visibility = if (shouldShowControls) VISIBLE else GONE
+    }
+
+    private fun updateMuteAllButton(isAllMuted: Boolean) {
+        if (isAllMuted) {
+            btnMuteAll.text = context.getString(R.string.roomkit_unmute_all_audio)
+            btnMuteAll.setTextColor(ContextCompat.getColor(context, R.color.roomkit_color_text_red))
+        } else {
+            btnMuteAll.text = context.getString(R.string.roomkit_mute_all_audio)
+            btnMuteAll.setTextColor(ContextCompat.getColor(context, R.color.roomkit_color_text_grey))
+        }
     }
 
     private fun showParticipantActionDialog(participant: RoomParticipant) {
@@ -228,5 +267,62 @@ class WebinarRoomParticipantListView @JvmOverloads constructor(
         }
         audienceManagerView?.setAudience(audience)
         audienceManagerDialog?.show()
+    }
+
+    private fun handleMuteAllClick() {
+        val roomInfo = roomStore?.state?.currentRoom?.value
+        val isAllMuted = roomInfo?.isAllMicrophoneDisabled ?: false
+
+        if (isAllMuted) {
+            logger.info("Unmute all participants clicked")
+            RoomAlertDialog.Builder(context)
+                .setTitle(R.string.roomkit_msg_all_members_will_be_unmuted)
+                .setMessage(R.string.roomkit_msg_members_can_unmute)
+                .setNegativeButton(android.R.string.cancel)
+                .setPositiveButton(R.string.roomkit_confirm_release) {
+                    handleUnmuteAll()
+                }
+                .show()
+        } else {
+            logger.info("Mute all participants clicked")
+            RoomAlertDialog.Builder(context)
+                .setTitle(R.string.roomkit_msg_all_members_will_be_muted)
+                .setMessage(R.string.roomkit_msg_members_cannot_unmute)
+                .setNegativeButton(android.R.string.cancel)
+                .setPositiveButton(R.string.roomkit_mute_all_audio) {
+                    handleMuteAll()
+                }
+                .show()
+        }
+    }
+
+    private fun handleMuteAll() {
+        val store = participantStore ?: return
+        logger.info("Execute mute all")
+        store.disableAllDevices(DeviceType.MICROPHONE, true, object : CompletionHandler {
+            override fun onSuccess() {
+                logger.info("Mute all success")
+            }
+
+            override fun onFailure(code: Int, desc: String) {
+                logger.error("Mute all failed: code=$code, desc=$desc")
+                ErrorLocalized.showError(context, code)
+            }
+        })
+    }
+
+    private fun handleUnmuteAll() {
+        val store = participantStore ?: return
+        logger.info("Execute unmute all")
+        store.disableAllDevices(DeviceType.MICROPHONE, false, object : CompletionHandler {
+            override fun onSuccess() {
+                logger.info("Unmute all success")
+            }
+
+            override fun onFailure(code: Int, desc: String) {
+                logger.error("Unmute all failed: code=$code, desc=$desc")
+                ErrorLocalized.showError(context, code)
+            }
+        })
     }
 }

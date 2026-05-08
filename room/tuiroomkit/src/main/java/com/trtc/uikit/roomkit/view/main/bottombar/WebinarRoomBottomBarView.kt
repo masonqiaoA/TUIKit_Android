@@ -7,10 +7,10 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.tencent.cloud.tuikit.engine.room.TUIRoomEngine
-import com.tencent.trtc.TRTCCloudDef
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.error.ErrorLocalized
+import com.trtc.uikit.roomkit.base.event.RoomEventNotifier
+import com.trtc.uikit.roomkit.base.event.RoomObserver
 import com.trtc.uikit.roomkit.base.log.RoomKitLogger
 import com.trtc.uikit.roomkit.base.operator.DeviceOperator
 import com.trtc.uikit.roomkit.base.ui.BaseView
@@ -52,9 +52,10 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : BaseView(context, attrs, defStyleAttr) {
+) : BaseView(context, attrs, defStyleAttr), RoomObserver {
 
     private val logger = RoomKitLogger.getLogger("WebinarRoomBottomBarView")
+    private val errorCodeRequestPending = 100100
 
     private val scope = CoroutineScope(Dispatchers.Main)
     private var subscribeJob: Job? = null
@@ -107,7 +108,7 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
     }
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.roomkit_bottom_bar_webinar, this)
+        LayoutInflater.from(context).inflate(R.layout.roomkit_view_bottom_bar_webinar, this)
     }
 
     public override fun init(roomID: String) {
@@ -123,6 +124,7 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
     override fun addObserver() {
         val participantStore = participantStore ?: return
         participantStore.addRoomParticipantListener(participantListener)
+        RoomEventNotifier.registerObserver(this)
 
         subscribeJob?.cancel()
         subscribeJob = scope.launch {
@@ -153,11 +155,6 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
                 .distinctUntilChanged()
                 .shareIn(this, SharingStarted.WhileSubscribed(), replay = 1)
 
-            val sharingUserRole = participantStore.state.participantListWithVideo
-                .map { list -> list.firstOrNull { it.userID != localUserID }?.role }
-                .distinctUntilChanged()
-                .shareIn(this, SharingStarted.WhileSubscribed(), replay = 1)
-
             launch {
                 roomStore.state.currentRoom
                     .map { room -> (room?.participantCount ?: 0) + (room?.audienceCount ?: 0) }
@@ -180,11 +177,9 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
                 combine(
                     isLocalInParticipantList,
                     localCameraStatus,
-                    localScreenShareStatus,
-                    localRole,
-                    sharingUserRole
-                ) { isLocalInList, camStatus, screenStatus, localRole, sharingRole ->
-                    updateCameraStatus(isLocalInList, camStatus, screenStatus, localRole, sharingRole)
+                    localRole
+                ) { isLocalInList, camStatus, role ->
+                    updateCameraStatus(isLocalInList, camStatus, role)
                 }.collect {}
             }
 
@@ -192,11 +187,9 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
                 combine(
                     isLocalInParticipantList,
                     localScreenShareStatus,
-                    localCameraStatus,
-                    localRole,
-                    sharingUserRole
-                ) { isLocalInList, screenStatus, camStatus, localRole, sharingRole ->
-                    updateScreenShareStatus(isLocalInList, screenStatus, camStatus, localRole, sharingRole)
+                    localRole
+                ) { isLocalInList, screenStatus, role ->
+                    updateScreenShareStatus(isLocalInList, screenStatus, role)
                 }.collect {}
             }
 
@@ -225,6 +218,8 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
 
     override fun removeObserver() {
         participantStore?.removeRoomParticipantListener(participantListener)
+        RoomEventNotifier.unregisterObserver(this)
+
         subscribeJob?.cancel()
         subscribeJob = null
         scope.cancel()
@@ -313,17 +308,11 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
     private fun updateCameraStatus(
         isLocalInParticipantList: Boolean,
         cameraStatus: DeviceStatus?,
-        screenStatus: DeviceStatus,
-        localRole: ParticipantRole?,
-        sharingUserRole: ParticipantRole?
+        role: ParticipantRole?
     ) {
-        logger.info("updateCameraStatus isLocalInParticipantList:$isLocalInParticipantList cameraStatus:$cameraStatus screenStatus:$screenStatus localRole:$localRole sharingUserRole:$sharingUserRole")
-        if (!isLocalInParticipantList) {
+        logger.info("updateCameraStatus isLocalInParticipantList:$isLocalInParticipantList cameraStatus:$cameraStatus role:$role")
+        if (!isLocalInParticipantList || role != ParticipantRole.OWNER) {
             llCamera.visibility = GONE
-            return
-        }
-        if (localRole != ParticipantRole.OWNER) {
-            llScreenShare.visibility = GONE
             return
         }
         llCamera.visibility = VISIBLE
@@ -338,24 +327,32 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
                 tvCamera.text = context.getString(R.string.roomkit_start_video)
             }
         }
-        val isBlockedByScreenShare = screenStatus == DeviceStatus.ON
-        val localRankHigherThanSharing =
-            sharingUserRole != null && localRole.value < sharingUserRole.value
-        val isBlockedByOtherSharing =
-            sharingUserRole != null && !localRankHigherThanSharing && cameraStatus != DeviceStatus.ON
-        val isButtonDisabled = isBlockedByScreenShare || isBlockedByOtherSharing
-        llCamera.alpha = if (isButtonDisabled) 0.5f else 1.0f
+        llCamera.alpha = 1.0f
     }
 
     private fun updateScreenShareStatus(
         isLocalInParticipantList: Boolean,
         screenStatus: DeviceStatus,
-        cameraStatus: DeviceStatus?,
-        localRole: ParticipantRole?,
-        sharingUserRole: ParticipantRole?
+        role: ParticipantRole?
     ) {
-        logger.info("updateScreenShareStatus isLocalInParticipantList:$isLocalInParticipantList screenStatus:$screenStatus cameraStatus:$cameraStatus localRole:$localRole sharingUserRole:$sharingUserRole")
-        llScreenShare.visibility = GONE
+        logger.info("updateScreenShareStatus isLocalInParticipantList:$isLocalInParticipantList screenStatus:$screenStatus role:$role")
+        if (!isLocalInParticipantList || role != ParticipantRole.OWNER) {
+            llScreenShare.visibility = GONE
+            return
+        }
+        llScreenShare.visibility = VISIBLE
+        when (screenStatus) {
+            DeviceStatus.ON -> {
+                ivScreenShare.setImageResource(R.drawable.roomkit_ic_sharing)
+                tvScreenShare.text = context.getString(R.string.roomkit_stop_screen_share)
+            }
+
+            else -> {
+                ivScreenShare.setImageResource(R.drawable.roomkit_ic_share)
+                tvScreenShare.text = context.getString(R.string.roomkit_start_screen_share)
+            }
+        }
+        llScreenShare.alpha = 1.0f
     }
 
     private fun handleParticipantsClick() {
@@ -382,27 +379,22 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
         logger.info("handleHandsUpClick")
         val participantStore = participantStore ?: return
         if (isHandsUpPending.value) {
-            participantStore.cancelOpenDeviceRequest(
-                device = DeviceType.MICROPHONE,
-                completion = object : CompletionHandler {
-                    override fun onSuccess() {}
-                    override fun onFailure(code: Int, desc: String) {
-                        logger.error("cancelOpenDeviceRequest failed: code=$code, desc=$desc")
-                        ErrorLocalized.showError(context, code)
-                    }
-                }
-            )
+            participantStore.cancelOpenDeviceRequest(DeviceType.MICROPHONE, null)
             isHandsUpPending.value = false
         } else {
             participantStore.requestToOpenDevice(
                 device = DeviceType.MICROPHONE,
-                timeout = 60,
+                timeout = 30,
                 completion = object : CompletionHandler {
                     override fun onSuccess() {}
 
                     override fun onFailure(code: Int, desc: String) {
                         logger.error("hands up requestToOpenDevice failed: code=$code, desc=$desc")
+                        if (code == errorCodeRequestPending) {
+                            return
+                        }
                         ErrorLocalized.showError(context, code)
+                        isHandsUpPending.value = false
                     }
                 }
             )
@@ -417,6 +409,17 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
         if (currentStatus == DeviceStatus.ON) {
             deviceOperator.muteMicrophone(participantStore)
         } else {
+            val isAllMuted = roomStore.state.currentRoom.value?.isAllMicrophoneDisabled ?: false
+            val role = participantStore.state.localParticipant.value?.role
+            if (isAllMuted && role == ParticipantRole.GENERAL_USER) {
+                logger.info("handleMicrophoneClick: All participants are muted, cannot unmute")
+                AtomicToast.show(
+                    context,
+                    context.getString(R.string.roomkit_tip_all_muted_cannot_unmute),
+                    Style.WARNING
+                )
+                return
+            }
             scope.launch {
                 try {
                     deviceOperator.unmuteMicrophone(participantStore)
@@ -473,15 +476,12 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
         }
         if (participantStore?.state?.participantListWithVideo?.value?.none { it.userID != localUserID } != false) {
             logger.info("handleScreenShareClick: no other sharing, start screen share directly")
-            val encParam = TRTCCloudDef.TRTCVideoEncParam()
-            encParam.videoResolution = TRTCCloudDef.TRTC_VIDEO_RESOLUTION_1280_720
-            TUIRoomEngine.sharedInstance().trtcCloud.setVideoEncoderParam(encParam)
             deviceOperator.startScreenShare()
             return
         }
         if (isSharingUserHigherRank()) {
             logger.info("handleScreenShareClick: sharing user has higher or equal rank, blocked")
-            AtomicToast.show(context, context.getString(R.string.roomkit_video_share_occupied), Style.WARNING)
+            AtomicToast.show(context, context.getString(R.string.roomkit_screen_share_occupied), Style.WARNING)
             return
         }
         showStartVideoConfirmDialog(
@@ -533,5 +533,14 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
                 deviceOperator.stopScreenShare()
             }
             .show()
+    }
+
+    override fun willLeaveRoom() {
+        logger.info("willLeaveRoom: isHandsUpPending=${isHandsUpPending.value}")
+        if (isHandsUpPending.value) {
+            val participantStore = participantStore ?: return
+            participantStore.cancelOpenDeviceRequest(DeviceType.MICROPHONE, null)
+            isHandsUpPending.value = false
+        }
     }
 }

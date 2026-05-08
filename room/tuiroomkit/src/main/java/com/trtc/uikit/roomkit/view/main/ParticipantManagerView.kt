@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.utils.widget.ImageFilterView
 import com.trtc.uikit.roomkit.R
+import com.trtc.uikit.roomkit.aitranscription.repository.AITranscriberRepository
 import com.trtc.uikit.roomkit.base.error.ErrorLocalized
 import com.trtc.uikit.roomkit.base.extension.getDisplayName
 import com.trtc.uikit.roomkit.base.log.RoomKitLogger
@@ -63,6 +64,16 @@ class ParticipantManagerView @JvmOverloads constructor(
     private var localParticipant: RoomParticipant? = null
     private var participantStore: RoomParticipantStore? = null
     private var onActionListener: OnParticipantActionListener? = null
+
+    companion object {
+        private var sharedRepository: AITranscriberRepository? = null
+        private var sharedHideAISubtitleCallback: (() -> Unit)? = null
+
+        fun bindRepository(repository: AITranscriberRepository, hideAISubtitleCallback: (() -> Unit)? = null) {
+            sharedRepository = repository
+            sharedHideAISubtitleCallback = hideAISubtitleCallback
+        }
+    }
 
     init {
         LayoutInflater.from(context).inflate(R.layout.roomkit_view_participant_action, this)
@@ -427,18 +438,40 @@ class ParticipantManagerView @JvmOverloads constructor(
 
     private fun showTransferOwnerConfirmDialog(participant: RoomParticipant) {
         logger.info("Show transfer owner confirm dialog for ${participant.userID}")
+        val isTranscriptionStart = sharedRepository?.isTranscriptionStart?.value == true
+        val messageResId = if (isTranscriptionStart) {
+            R.string.roomkit_transfer_host_with_asr_warning
+        } else {
+            R.string.roomkit_msg_transfer_owner_tip
+        }
 
         RoomAlertDialog.Builder(context)
             .setTitle(R.string.roomkit_msg_transfer_owner_to, participant.getDisplayName())
-            .setMessage(R.string.roomkit_msg_transfer_owner_tip)
+            .setMessage(messageResId)
             .setNegativeButton(android.R.string.cancel)
             .setPositiveButton(R.string.roomkit_confirm_transfer) {
-                handleTransferOwner(participant)
+                if (isTranscriptionStart) {
+                    sharedRepository?.stopTranscription(object : CompletionHandler {
+                        override fun onSuccess() {
+                            transferOwner(participant) { success ->
+                                if (success) {
+                                    sharedHideAISubtitleCallback?.invoke()
+                                }
+                            }
+                        }
+
+                        override fun onFailure(code: Int, desc: String) {
+                            ErrorLocalized.showError(context, code)
+                        }
+                    })
+                } else {
+                    transferOwner(participant)
+                }
             }
             .show()
     }
 
-    private fun handleTransferOwner(participant: RoomParticipant) {
+    private fun transferOwner(participant: RoomParticipant, completion: ((Boolean) -> Unit)? = null) {
         val store = participantStore ?: return
         logger.info("Transfer owner to ${participant.userID}")
         store.transferOwner(participant.userID, object : CompletionHandler {
@@ -446,11 +479,13 @@ class ParticipantManagerView @JvmOverloads constructor(
                 logger.info("Transfer owner success: ${participant.userID}")
                 val message = context.getString(R.string.roomkit_toast_owner_transferred, participant.getDisplayName())
                 AtomicToast.show(context, message, Style.SUCCESS)
+                completion?.invoke(true)
             }
 
             override fun onFailure(code: Int, desc: String) {
                 logger.error("Transfer owner failed: code=$code, desc=$desc")
                 ErrorLocalized.showError(context, code)
+                completion?.invoke(false)
             }
         })
     }
